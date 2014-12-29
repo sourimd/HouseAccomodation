@@ -1,0 +1,88 @@
+<html>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+		</script>
+		<script>
+			function checkUserData(){
+				//alert("Hello");
+				var userid = document.getElementById("userid").value.trim();
+				var pwd = document.getElementById("password").value;
+				var rsp;
+				var str = "<a href='recoverpassword.html#userid="+userid+"'>Click Here if you have forgotten your password</a>";
+				var flag = 0;
+				var mandField = "This is a mandatory field";
+				document.getElementById("divUID").innerHTML = "*";
+				document.getElementById("divPwd").innerHTML = "*";
+				if(userid.length == 0){
+					console.log("here");
+					flag = 1;
+					//console.log(document.getElementById("divLName"));
+					document.getElementById("divUID").innerHTML = document.getElementById("divUID").innerHTML+mandField;
+				}
+				if(pwd.length == 0){
+					console.log("here");
+					flag = 1;
+					//console.log(document.getElementById("divLName"));
+					document.getElementById("divPwd").innerHTML = document.getElementById("divPwd").innerHTML+mandField;
+				}
+				if(flag == 1){
+					return false;
+				}
+
+				
+				$.ajax({
+                type: "POST",
+                async: false,
+                url: "signinusercheck.php",
+                data: "useridpwd="+userid+"|"+pwd,
+                success: function(result) {
+                	//console.log(result);
+                    //rsp = result;
+                    if(result=="UserNotExists"){
+                    	 $("#message").html("User ID does not exist");
+                    	 rsp = "false";
+                    }
+                    else if(result=="PasswordWrong"){
+                    	 $("#message").html("You have entered wrong password"+" "+str);
+                    	 rsp = "false";
+                    }
+                    else
+                    	rsp=result;
+                }
+            });
+				console.log(rsp);
+				if(rsp == "false")
+					return eval(rsp);
+				else{
+					var hashuid;
+					$.ajax({
+	                type: "POST",
+	                async: false,
+	                url: "gethashval.php",
+	                data: "userid="+userid,
+	                success: function(result) {
+	                	hashuid=result;
+	                }
+	            });
+					window.location.assign("login.html#"+hashuid);
+				}
+					
+			}
+		
+		</script>
+	</head>
+
+	<body>
+		<!-- <form action="login.php" method="POST"> -->
+			<table>
+				<tr><td>User ID:</td><td><input type="text" id="userid"></td><td><div id="divUID" style="color:red">*</div></td></tr>
+			 	<tr><td>Password:</td><td><input type="password" id="password"></td><td><div id="divPwd" style="color:red">*</div></td></tr>
+				<tr><td><input type="submit" value="Sign in" onclick="return checkUserData();"></td><td><a href="newuser.html">New User? Click Here</a></td></tr>
+
+			</table>
+		<!-- </form> -->
+		<a href="resetpassword.html">Reset password</a>
+		<div id="message" style="color:red"></div>
+		
+	</body>
+</html>

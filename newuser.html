@@ -1,0 +1,169 @@
+<html>
+	<head>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+		</script>
+		<script>
+			
+			function checkUserData()
+			{
+			var UserID = document.getElementById("userid").value.trim();
+			var Pwd = document.getElementById("password").value;
+			var CnfPwd = document.getElementById("cnfpwd").value;
+			var FName = document.getElementById("fname").value.trim();
+			var LName = document.getElementById("lname").value.trim();
+			var Email = document.getElementById("emailid").value.trim();
+			var Phone = document.getElementById("phno").value.trim();
+			var secqstn = document.getElementById("secqstn");
+			var Ans = document.getElementById("answer").value.trim();
+			var flag = 0;
+			var mandField = "This is a mandatory field";
+			//console.log(UserID);
+			var letterNumber = /^[0-9a-zA-Z]+$/;
+			var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+			var letter = /^[a-zA-Z]+$/;
+			var phoneno =  /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+
+
+
+			document.getElementById("divUserID").innerHTML = "*";
+			// if(globalflag == 1){
+			// 	document.getElementById("divUserID").innerHTML = document.getElementById("divUserID").innerHTML + "This User ID is already present. You cannot use this one.";
+			// }
+			document.getElementById("divPwd").innerHTML = "*";
+			document.getElementById("divCnfPwd").innerHTML = "*";
+			document.getElementById("divFName").innerHTML = "*";
+			document.getElementById("divLName").innerHTML = "*";
+			document.getElementById("divEmail").innerHTML = "*";
+			document.getElementById("divPhone").innerHTML = "";
+			document.getElementById("divSecQstn").innerHTML = "*";
+			document.getElementById("divAns").innerHTML = "*";
+
+			if(UserID.length == 0){
+				console.log("here");
+				flag = 1;
+				console.log(document.getElementById("divUserID"));
+				document.getElementById("divUserID").innerHTML = document.getElementById("divUserID").innerHTML+mandField;
+			}
+			if(UserID.length>0){
+				$.ajax({
+                type: "POST",
+                async: false,
+                url: "useridpresencecheck.php",
+                data: "userid="+UserID,
+                success: function(result) {
+                	//console.log(result);
+                    //rsp = result;
+                    if(result=="False"){
+                    	 //$("#divUserID").html("This user id is already present. Choose something else");
+                    	 document.getElementById("divUserID").innerHTML = document.getElementById("divUserID").innerHTML+"This user name already exists";
+                    	 flag=1;
+                    }
+                }
+            });
+
+			}
+			if(Pwd.length == 0){
+				console.log("here");
+				flag = 1;
+				console.log(document.getElementById("divPwd"));
+				document.getElementById("divPwd").innerHTML = document.getElementById("divPwd").innerHTML+mandField;
+			}
+			if(CnfPwd.length == 0){
+				console.log("here");
+				flag = 1;
+				console.log(document.getElementById("divCnfPwd"));
+				document.getElementById("divCnfPwd").innerHTML = document.getElementById("divCnfPwd").innerHTML+mandField;
+			}
+			if(FName.length == 0){
+				console.log("here");
+				flag = 1;
+				console.log(document.getElementById("divFName"));
+				document.getElementById("divFName").innerHTML = document.getElementById("divFName").innerHTML+mandField;
+			}
+			if(LName.length == 0){
+				console.log("here");
+				flag = 1;
+				console.log(document.getElementById("divLName"));
+				document.getElementById("divLName").innerHTML = document.getElementById("divLName").innerHTML+mandField;
+			}
+			if(Email.length == 0){
+				console.log("here");
+				flag = 1;
+				console.log(document.getElementById("divEmail"));
+				document.getElementById("divEmail").innerHTML = document.getElementById("divEmail").innerHTML+mandField;
+			}
+			if(Pwd != CnfPwd && Pwd.length != 0 && CnfPwd.length != 0){
+				console.log("here");
+				flag = 1;
+				//console.log(document.getElementById("divPwd"));
+				document.getElementById("divCnfPwd").innerHTML = document.getElementById("divCnfPwd").innerHTML+"Password and Confirm Password mismatch";
+			}
+
+			if(!UserID.match(letterNumber) && UserID.length>0){ 
+				flag = 1;
+				document.getElementById("divUserID").innerHTML = document.getElementById("divUserID").innerHTML+"Only alphanumeric characters are allowed";
+			}
+			if(!Email.match(mailformat) && Email.length>0){ 
+				flag = 1;
+				document.getElementById("divEmail").innerHTML = document.getElementById("divEmail").innerHTML+"Incorrect Email ID format";
+			}
+			if(!FName.match(letter) && FName.length>0){ 
+				flag = 1;
+				document.getElementById("divFName").innerHTML = document.getElementById("divFName").innerHTML+"Only alphabets are allowed";
+			}
+			if(!LName.match(letter) && LName.length>0){ 
+				flag = 1;
+				document.getElementById("divLName").innerHTML = document.getElementById("divLName").innerHTML+"Only alphabets are allowed";
+			}
+			if(!Phone.match(phoneno) && Phone.length>0){ 
+				flag = 1;
+				console.log("wrong");
+				document.getElementById("divPhone").innerHTML = document.getElementById("divPhone").innerHTML+"The format should be one of the following:- XXX-XXX-XXXX or XXX.XXX.XXXX or XXX XXX XXXX";
+			}
+			if(secqstn.selectedIndex == 0){
+				flag = 1;
+				document.getElementById("divSecQstn").innerHTML = document.getElementById("divSecQstn").innerHTML+mandField;
+			}
+			if(Ans.length == 0){
+				console.log("here");
+				flag = 1;
+				document.getElementById("divAns").innerHTML = document.getElementById("divAns").innerHTML+mandField;
+			}
+			
+			
+			//flag =1;
+			//alert(flag);
+			if(flag == 1) 
+				return false;
+			else
+				return true;
+			}
+
+		</script>
+		
+	</head>
+
+	<body>
+		<form action="uploadUserData.php" method="POST">
+			<table>
+				<tr><td style="color:red">User ID:</td><td><input type="text" id="userid" name="userid"></td><td><div id="divUserID" style="color:red">*</div></td></tr>
+			 	<tr><td style="color:red">Password:</td><td><input type="password" id="password" name="pwd"></td><td><div id="divPwd" style="color:red">*</div></td></tr>
+			 	<tr><td style="color:red">Confirm Password:</td><td><input type="password" id="cnfpwd"></td><td><div id="divCnfPwd" style="color:red">*</div></td></tr>
+			 	<tr><td style="color:red">First Name:</td><td><input type="text" id="fname" name="fname"></td><td><div id="divFName" style="color:red">*</div></td></tr>
+			 	<tr><td style="color:red">Last Name:</td><td><input type="text" id="lname" name="lname"></td><td><div id="divLName" style="color:red">*</div></td></tr>
+			 	<tr><td style="color:red">Email ID:</td><td><input type="text" id="emailid" name="email"></td><td><div id="divEmail" style="color:red">*</div></td></tr>
+			 	<tr><td>Phone Number:</td><td><input type="text" id="phno" name="phno"></td><td><div id="divPhone" style="color:red"></div></td></tr>
+			 	<tr><td style="color:red">Security Question:</td><td><select id="secqstn" name="secqstn">
+			 										  <option value="null">Select an option</option>
+													  <option value="What is the name of first school?">What is the name of first school?</option>
+													  <option value="What is your mother\'s maiden name?">What is your mother's maiden name?</option>
+													  <option value="What is the name of your first baby sitter?">What is the name of your first baby sitter?</option>
+													  <option value="What is the name of your favourite teacher?">What is the name of your favourite teacher?</option>
+													</select></td><td><div id="divSecQstn" style="color:red">*</div></td></tr>
+				<tr><td style="color:red">Answer:</td><td><input type="text" id="answer" name="answer" size="41"></td><td><div id="divAns" style="color:red">*</div></td></tr>
+				<tr><td><input type="submit" value="Create Profile" onclick="return checkUserData();"></td></tr>
+			<table>
+		</form>
+		
+	</body>
+</html>
